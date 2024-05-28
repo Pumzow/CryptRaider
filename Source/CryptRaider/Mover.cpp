@@ -1,4 +1,5 @@
 #include "Mover.h"
+#include "Math/UnrealMathUtility.h"
 
 UMover::UMover()
 {
@@ -8,16 +9,22 @@ UMover::UMover()
 void UMover::BeginPlay()
 {
 	Super::BeginPlay();
+	OriginalLocation = GetOwner()->GetActorLocation();
 }
 
 
 void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-	AActor* owner = GetOwner();
-	FString name = owner->GetActorNameOrLabel();
-	FString location = owner->GetActorLocation().ToCompactString();
-	UE_LOG(LogTemp, Log, TEXT("Mover Owner: %s | Location: %s"), *name, *location);
+
+	if (ShouldMove)
+	{
+		FVector CurrentLocation = GetOwner()->GetActorLocation();
+		FVector TargetLocation = OriginalLocation + MoveOffset;
+		float Speed = FVector::Distance(OriginalLocation, TargetLocation) / MoveTime;
+
+		FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TargetLocation, DeltaTime, Speed);
+		GetOwner()->SetActorLocation(NewLocation);
+	}
 }
 

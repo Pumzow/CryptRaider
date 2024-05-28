@@ -3,29 +3,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-#include "Mover.generated.h"
+#include "Components/SceneComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Grabber.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class CRYPTRAIDER_API UMover : public UActorComponent
+class CRYPTRAIDER_API UGrabber : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
-	UMover();
-
+	UGrabber();
 private:
 	UPROPERTY(EditAnywhere)
-	FVector MoveOffset;
+	float MaxGrabDistance = 400;
 	UPROPERTY(EditAnywhere)
-	float MoveTime = 4;
+	float GrabRadius = 100;
 	UPROPERTY(EditAnywhere)
-	bool ShouldMove = false;
-	FVector OriginalLocation;
+	float HoldDistance = 200;
 protected:
 	virtual void BeginPlay() override;
+	UPhysicsHandleComponent* GetPhysicsHandle() const;
 
-public:
+public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintCallable)
+	void Grab();
+	UFUNCTION(BlueprintCallable)
+	void Release();
 };
