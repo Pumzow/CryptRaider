@@ -40,9 +40,9 @@ void UGrabber::Grab()
 	FHitResult HitResult;\
 	if (GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity, ECC_GameTraceChannel2, FCollisionShape::MakeSphere(GrabRadius)))
 	{
-		AActor* HitActor = HitResult.GetActor();
-		UE_LOG(LogTemp, Display, TEXT("Hit: %s"), *HitActor->GetActorNameOrLabel());
-		PhysicsHandle->GrabComponentAtLocationWithRotation(HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, GetComponentRotation());
+		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+		HitComponent->WakeAllRigidBodies();
+		PhysicsHandle->GrabComponentAtLocationWithRotation(HitComponent, NAME_None, HitResult.ImpactPoint, GetComponentRotation());
 	}
 }
 
@@ -50,8 +50,10 @@ void UGrabber::Release()
 {
 	UPhysicsHandleComponent *PhysicsHandle = GetPhysicsHandle();
 	if (PhysicsHandle == nullptr) return;
-
-	//PhysicsHandle->GrabComponentAtLocationWithRotation(HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.GetComponent()->GetComponentRotation());
+	UPrimitiveComponent* HandledComponent  = PhysicsHandle->GetGrabbedComponent();
+	if (HandledComponent == nullptr) return;
+	HandledComponent->WakeAllRigidBodies();
+	PhysicsHandle->ReleaseComponent();
 }
 
 UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const
