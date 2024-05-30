@@ -25,6 +25,7 @@ private:
 protected:
 	virtual void BeginPlay() override;
 	UPhysicsHandleComponent* GetPhysicsHandle() const;
+	bool GetGrabbableInReach(FHitResult& OutHitResult) const;
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
